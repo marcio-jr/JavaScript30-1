@@ -12,6 +12,7 @@
    When a user clicks a checkbox, holds Shift, and then clicks another checkbox a few rows down, all the checkboxes inbetween those two checkboxes should be checked.
 
   -->
+  <p class="myTitle"> <center> This is my solution! :-) Check AND Uncheck </center> </p>
   <div class="inbox">
     <div class="item">
       <input type="checkbox">
@@ -57,12 +58,18 @@
       background:#ffc600;
     }
 
+    .myTitle{
+      border: 0;
+      margin: 0;
+      padding: 0;
+    }
     .inbox {
       max-width:400px;
       margin:50px auto;
       background:white;
       border-radius:5px;
       box-shadow:10px 10px 0 rgba(0,0,0,0.1);
+      margin-top: 0;
     }
 
     .item {
@@ -100,51 +107,61 @@
 <script>
 
   function checkChange(e){
-    theIndex = arrChecks.indexOf(this);
+    var insideArea = false;
+    
     if (shiftPress){
-      //console.log("Shift is PRESSED");
-      start = checkeds.pop();
-      //console.log("finish: " + theIndex);
-      checkeds = [];
-
-      max = Math.max(start, theIndex);
-      min = Math.min(start, theIndex);
-      selectCheckArr = Array.from(new Array(max-min+1),(val,index)=>index+min);
-      selectCheck = new Set(selectCheckArr);
-
-      arrChecks.forEach (function(it, idx){
-        if (selectCheck.has(idx)){
-          it.checked = true;
-        }
-      });
+      if (this.checked){
+        startCh = checkeds.pop();
+        checkeds = []; // clears the stack once used.
+        checks.forEach(it => {
+          if (it == this || it == startCh){
+            insideArea = !insideArea; //Will be TRUE for all itens in the selected area
+          }
+          if (insideArea){
+            it.checked = true;
+          }
+        }); 
+      }
+      else { //if unchecked...
+        startUn = unCheckeds.pop();
+        unCheckeds = []; // clears the stack once used.
+        checks.forEach(it => {
+          if (it == this || it == startUn){
+            insideArea = !insideArea; //Will be TRUE for all itens in the selected area
+          }
+          if (insideArea){
+            it.checked = false;
+          }
+        });
+      }
     }
     if (this.checked){
-      checkeds.push(theIndex);
+      checkeds.push(this);
+      unCheckeds = unCheckeds.filter(it => it !== this);
     }
-    else { //if unchecked...
-      checkeds.splice(checkeds.indexOf(theIndex),1);
+    else{
+      unCheckeds.push(this);
+      checkeds = checkeds.filter(it => it !== this);
     }
   }
 
   function handleKeyReleassing(e){
     if (e.keyCode == 16){
       shiftPress = false;
-      //console.log("Shift release");
     }
   }
 
   function handleKeyPressing(e){    
     if (e.keyCode == 16){
       shiftPress = true;
-      //console.log("Shift press");
     }
   }
 
   var shiftPress = false;
   var checkeds = [];
+  var unCheckeds = [];
   const checks = document.querySelectorAll('input');
   checks.forEach(cb => cb.addEventListener("change",checkChange));
-  const arrChecks = Array.from(checks);
   window.addEventListener('keydown', handleKeyPressing);
   window.addEventListener('keyup', handleKeyReleassing);
 
