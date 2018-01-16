@@ -12,7 +12,7 @@
    When a user clicks a checkbox, holds Shift, and then clicks another checkbox a few rows down, all the checkboxes inbetween those two checkboxes should be checked.
 
   -->
-  <p class="myTitle"> <center> This is my solution! :-) </center> </p>
+  <p class="myTitle"> <center> This is my solution! :-) Only CHECK</center> </p>
   <div class="inbox">
     <div class="item">
       <input type="checkbox">
@@ -109,7 +109,7 @@
   function checkChange(e){
     var insideArea = false;
 
-    if (shiftPress){
+    if (shiftPress && this.checked){
       start = checkeds.pop();
       checkeds = []; // clears the stack once used.
       checks.forEach(it => {
