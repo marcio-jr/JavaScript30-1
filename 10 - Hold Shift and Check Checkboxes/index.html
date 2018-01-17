@@ -105,34 +105,30 @@
   </style>
    
 <script>
-
-  function checkChange(e){
+  function checkSelected(thisPoint, stPoint, desiredValue){
     var insideArea = false;
-    
-    if (shiftPress){
+    if (stPoint == undefined) return;
+    checks.forEach(it => {
+      if (it == thisPoint || it == stPoint){
+        insideArea = !insideArea; //Will be TRUE for all itens in the selected area
+      }
+      if (insideArea){
+        it.checked = desiredValue;
+      }
+    });
+  }
+
+  function checkChange(e){    
+    if (e.shiftKey){
       if (this.checked){
         startCh = checkeds.pop();
-        checkeds = []; // clears the stack once used.
-        checks.forEach(it => {
-          if (it == this || it == startCh){
-            insideArea = !insideArea; //Will be TRUE for all itens in the selected area
-          }
-          if (insideArea){
-            it.checked = true;
-          }
-        }); 
+        checkeds = []; // clears the stack once used. 
+        checkSelected(this, startCh, true);
       }
       else { //if unchecked...
         startUn = unCheckeds.pop();
         unCheckeds = []; // clears the stack once used.
-        checks.forEach(it => {
-          if (it == this || it == startUn){
-            insideArea = !insideArea; //Will be TRUE for all itens in the selected area
-          }
-          if (insideArea){
-            it.checked = false;
-          }
-        });
+        checkSelected(this, startUn, false);
       }
     }
     if (this.checked){
@@ -145,26 +141,9 @@
     }
   }
 
-  function handleKeyReleassing(e){
-    if (e.keyCode == 16){
-      shiftPress = false;
-    }
-  }
-
-  function handleKeyPressing(e){    
-    if (e.keyCode == 16){
-      shiftPress = true;
-    }
-  }
-
-  var shiftPress = false;
-  var checkeds = [];
-  var unCheckeds = [];
+  var [checkeds, unCheckeds] = [[],[]];
   const checks = document.querySelectorAll('input');
-  checks.forEach(cb => cb.addEventListener("change",checkChange));
-  window.addEventListener('keydown', handleKeyPressing);
-  window.addEventListener('keyup', handleKeyReleassing);
-
+  checks.forEach(cb => cb.addEventListener("click",checkChange));
 </script>
 
 
